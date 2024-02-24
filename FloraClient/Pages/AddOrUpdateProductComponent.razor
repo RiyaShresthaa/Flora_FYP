@@ -25,10 +25,7 @@
                              <label class="form-label"> Description</label>
                              <InputTextArea @bind-Value="MyProduct.Description" class="form-control"></InputTextArea>
                          </div>
-                         <div class="form-group">
-                             <label class="form-label"> Name</label>
-                             <InputText @bind-Value="MyProduct.Name" class="form-control"></InputText>
-                         </div>
+                         
                          <div class="form-group mt-3">
                              <label class="form-label @(ImageUploadMessage == ""?"":"text-danger")">
                                  @(ImageUploadMessage == "" ? "Upload Image" : ImageUploadMessage)
@@ -56,7 +53,9 @@
     string ImageUploadMessage = "";
     async Task HandleSaveProduct()
     {
-
+        ShowSaveButton = false;
+        ShowBusyButton = !ShowSaveButton;
+        
     }
 
     async Task UploadImage(InputFileChangeEventArgs e)
@@ -77,7 +76,7 @@
         return;
     }
 
-    public bool ShowBusyButtonm { get; set; }
+    public bool ShowBusyButton { get; set; }
     public bool ShowSaveButton { get; set; } = true;
 
 }
