@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FloraServer", "FloraServer\FloraServer.csproj", "{F5166852-9045-4DA0-8DEA-0D8638498176}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FloraServer", "FloraServer\FloraServer.csproj", "{F5166852-9045-4DA0-8DEA-0D8638498176}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FloraClient", "FloraClient\FloraClient.csproj", "{EFDD4D7F-2F40-4FDE-85E8-45E8DB112167}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FloraClient", "FloraClient\FloraClient.csproj", "{EFDD4D7F-2F40-4FDE-85E8-45E8DB112167}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FloraSharedLibrary", "FloraSharedLibrary\FloraSharedLibrary.csproj", "{B33089C5-7152-4258-B9CC-E05F170310D8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FloraSharedLibrary", "FloraSharedLibrary\FloraSharedLibrary.csproj", "{B33089C5-7152-4258-B9CC-E05F170310D8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
