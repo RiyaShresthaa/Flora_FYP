@@ -12,7 +12,7 @@ namespace FloraClient.Services
         private static string SerializedObj(object modelObject) => JsonSerializer.Serialize(modelObject, JsonOptions());
         private static T DeserializeJsonString<T>(string jsonString) => JsonSerializer.Deserialize<T>(jsonString, JsonOptions())!;
         private static StringContent GenerateStringContent(string serialiazedObj) => new(serialiazedObj, System.Text.Encoding.UTF8, "application/json");
-        private static IList<T> DeserializeJsonStringList<T>(string jsonString) => JsonSerializer.Deserialize<IEnumerable<T>>(jsonString, JsonOptions())!;
+        private static IList<T> DeserializeJsonStringList<T>(string jsonString) => JsonSerializer.Deserialize<IList<T>>(jsonString, JsonOptions())!;
         private static JsonSerializerOptions JsonOptions()
         {
             return new JsonSerializerOptions

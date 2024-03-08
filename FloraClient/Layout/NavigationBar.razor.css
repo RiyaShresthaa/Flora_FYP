@@ -1,0 +1,10 @@
+﻿
+@font-face {
+    font-family: 'tangerine_regular';
+    src: url('tangerine/tangerine_regular.ttf') format('truetype');
+}
+
+#topBar {
+    font-family: tangerine_regular;
+    text-align: center;
+}
