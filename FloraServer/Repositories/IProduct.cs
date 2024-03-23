@@ -1,6 +1,6 @@
 ﻿using FloraSharedLibrary.Models;
 using FloraSharedLibrary.Responses;
-namespace FloraSharedLibrary.Contracts
+namespace FloraServer.Repositories
 {
     public interface IProduct
     {

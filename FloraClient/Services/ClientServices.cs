@@ -1,12 +1,11 @@
-﻿using FloraSharedLibrary.Contracts;
-using FloraSharedLibrary.Models;
+﻿using FloraSharedLibrary.Models;
 using FloraSharedLibrary.Responses;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace FloraClient.Services
 {
-    public class ClientServices(HttpClient httpClient) : IProduct
+    public class ClientServices(HttpClient httpClient) : IProductService
     {
         private const string BaseUrl = "api/product";
         private static string SerializedObj(object modelObject) => JsonSerializer.Serialize(modelObject, JsonOptions());

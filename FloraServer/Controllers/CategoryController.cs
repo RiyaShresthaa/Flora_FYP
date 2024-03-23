@@ -8,19 +8,20 @@ namespace FloraServer.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ProductController(IProduct productService) : ControllerBase
+    public class CategoryController(ICategory categoryService) : ControllerBase
     {
         [HttpGet]
-        public async Task<ActionResult<List<Product>>> GetAllProducts(bool featured)
+        public async Task<ActionResult<List<Product>>> GetAllProducts()
         {
-            var products = await productService.GetAllProducts(featured); return Ok(products);
+            var products = await categoryService.GetAllCategories();
+            return Ok(products);
         }
 
         [HttpPost]
-        public async Task<ActionResult<ServiceResponse>> AddProduct(Product model)
+        public async Task<ActionResult<ServiceResponse>> AddCategory(Category model)
         {
             if (model is null) return BadRequest("Model is Null");
-            var response = await productService.AddProduct(model);
+            var response = await categoryService.AddCategory(model);
             return Ok(response);
         }
     }

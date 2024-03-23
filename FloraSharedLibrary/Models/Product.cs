@@ -19,5 +19,10 @@ namespace FloraSharedLibrary.Models
         public int Quantity { get; set; }
         public bool Featured { get; set; } = false;
         public DateTime DateUploaded { get; set; } = DateTime.Now;
+
+        //Reslationship : Many to One 
+        public Category? Category { get; set; }
+        public int CategoryId { get; set; }
+
     }
 }

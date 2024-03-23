@@ -1,5 +1,4 @@
 using FloraServer.Data;
-using FloraSharedLibrary.Contracts;
 using Microsoft.EntityFrameworkCore;
 using FloraServer.Repositories;
 
@@ -19,6 +18,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Default") ?? throw new InvalidOperationException("Connection string not found"));
 });
 builder.Services.AddScoped<IProduct, ProductRepository>();
+builder.Services.AddScoped<ICategory, CategoryRepository>();
+
 
 
 //Ending.
