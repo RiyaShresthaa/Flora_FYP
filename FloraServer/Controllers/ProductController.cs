@@ -8,15 +8,8 @@ namespace FloraServer.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ProductController : ControllerBase
+    public class ProductController(IProduct productService) : ControllerBase
     {
-        private readonly IProduct productService;
-
-        public ProductController(IProduct productService)
-        {
-            this.productService = productService;
-        }
-
         [HttpGet]
         public async Task<ActionResult<List<Product>>> GetAllProducts(bool featured)
         {

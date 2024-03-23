@@ -9,14 +9,13 @@ namespace FloraServer.Repositories
     {
         private readonly AppDbContext _appDbContext = appDbContext;
 
-       
+        
         public async Task<ServiceResponse> AddCategory(Category model)
         {
             if (model is null) return new ServiceResponse(false,"model is null");
             var (flag, message) = await CheckName(model.Name!);
             if (flag)
             {
-                _appDbContext.Categories.Add(model);
                 await Commit();
                 return new ServiceResponse(true, "Category Saved");
                 
@@ -30,7 +29,7 @@ namespace FloraServer.Repositories
         {
             throw new NotImplementedException();
         }
-
+        
         public async Task<List<Category>> GetAllCategories() => await _appDbContext.Categories.ToListAsync();
 
         private async Task<ServiceResponse> CheckName (string name)

@@ -14,7 +14,6 @@ namespace FloraServer.Controllers
         [HttpGet]
         public async Task<ActionResult<List<Product>>> GetAllProducts()
         {
-            var products = await categoryService.GetAllCategories(); return Ok(products);
         }
 
         [HttpPost]
