@@ -25,4 +25,8 @@
     <ProjectReference Include="..\FloraSharedLibrary\FloraSharedLibrary.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Pages\CategoryPages\" />
+  </ItemGroup>
+
 </Project>
