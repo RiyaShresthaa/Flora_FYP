@@ -17,34 +17,61 @@ namespace FloraClient.Services
         {
             var response = await httpClient.PostAsync(ProductBaseUrl, General.GenerateStringContent(General.SerializedObj(model)));
 
-            if (!response.IsSuccessStatusCode)
-                return new ServiceResponse(false, "Error occured. Try again later...");
+            var result = CheckResponse(response);
+            if (!result.Flag)
+                return result;
 
-            var apiResponse = await response.Content.ReadAsStringAsync();
+            var apiResponse = await ReadContent(response);
             return General.DeserializeJsonString<ServiceResponse>(apiResponse);
         }
 
         public async Task<List<Product>> GetAllProducts(bool featuredProducts)
         {
             var response = await httpClient.GetAsync($"{ProductBaseUrl}?featured={featuredProducts}");
-            if (!response.IsSuccessStatusCode) return null!;
+            var (flag, _) = CheckResponse(response);
+            if (!flag) return null!;
 
-            var result = await response.Content.ReadAsStringAsync();
+            var result = await ReadContent(response);
             return [.. General.DeserializeJsonStringList<Product>(result)];
         }
 
-
-
+        
         //categories
 
-        public Task<ServiceResponse> AddCategory(Category model)
+        public async Task<ServiceResponse> AddCategory(Category model)
         {
-            throw new NotImplementedException();
+            var response = await httpClient.PostAsync(CategoryBaseUrl, General.GenerateStringContent(General.SerializedObj(model)));
+
+            var result = CheckResponse(response);
+            if (!result.Flag)
+                return result;
+
+            var apiResponse = await ReadContent(response);
+            return General.DeserializeJsonString<ServiceResponse>(apiResponse);
         }
 
-        public Task GetAllCategories()
+        public async Task<List<Category>> GetAllCategories()
         {
-            throw new NotImplementedException();
+            var response = await httpClient.GetAsync($"{CategoryBaseUrl}");
+            var (flag, _) = CheckResponse(response);
+            if (!flag) return null!;
+
+            var result = await ReadContent(response);
+            return [.. General.DeserializeJsonStringList<Category>(result)];
+        }
+
+        //General Method
+
+        private static async Task<string> ReadContent(HttpResponseMessage response) => await response.Content.ReadAsStringAsync();
+
+
+        private ServiceResponse CheckResponse(HttpResponseMessage response)
+        {
+            if (!response.IsSuccessStatusCode)
+                return new ServiceResponse(false, "Error occured. Try again later...");
+            else
+                return new ServiceResponse(true, null!);
+
         }
     }
 }
