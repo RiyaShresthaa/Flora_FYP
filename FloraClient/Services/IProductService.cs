@@ -4,8 +4,12 @@ namespace FloraClient.Services
 {
     public interface IProductService
     {
+        Action? ProductAction { get; set; }
         Task<ServiceResponse> AddProduct(Product model);
-        Task<List<Product>> GetAllProducts(bool featuredProducts);
+        Task GetAllProducts(bool featuredProducts);
+        List<Product> AllProducts { get; set; }
+        List<Product> FeaturedProducts { get; set; }
+
     }
 }
 

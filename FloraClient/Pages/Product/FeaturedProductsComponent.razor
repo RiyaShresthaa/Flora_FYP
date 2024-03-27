@@ -73,13 +73,8 @@
     {
         ProductList?.Clear();
         bool featured = true;
-        var results = await ClientServices.GetAllProducts(featured);
-        if (results is null) return;
-
-        foreach (var i in results)
-
-            ProductList!.Add(i);
-
+        await ClientServices.GetAllProducts(featured);
+        var data = ClientServices.FeaturedProducts;
         LoadData();
     }
 

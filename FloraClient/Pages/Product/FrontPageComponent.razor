@@ -79,10 +79,8 @@
     {
         FeaturedProductList?.Clear();
         bool featured = true;
-        var results = await ClientServices.GetAllProducts(featured);
-        if (results is null) return;
-        foreach (var i in results)
-            FeaturedProductList!.Add(i);
+        await ClientServices.GetAllProducts(featured);
+        FeaturedProductList = ClientServices.FeaturedProducts;
     }
 
     string GetNewLabel(DateTime dateUploaded)
