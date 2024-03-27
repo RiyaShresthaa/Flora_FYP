@@ -5,19 +5,12 @@ namespace FloraClient.Services
 {
     public class ClientServices(HttpClient httpClient) : IProductService, ICategoryService
     {
-        private const string ProductBaseUrl = "api/product";
-        private const string CategoryBaseUrl = "api/category";
-
-        public Action? CategoryAction { get; set; }
-        public List<Category> AllCategories { get; set; }
-        public Action? ProductAction { get; set; }
-        public List<Product> AllProducts { get; set; }
-        public List<Product> FeaturedProducts { get; set; }
-
-
-        //Products
-
-        public async Task<ServiceResponse> AddProduct(Product model)
+        private const string BaseUrl = "api/product";
+        private static string SerializedObj(object modelObject) => JsonSerializer.Serialize(modelObject, JsonOptions());
+        private static T DeserializeJsonString<T>(string jsonString) => JsonSerializer.Deserialize<T>(jsonString, JsonOptions())!;
+        private static StringContent GenerateStringContent(string serialiazedObj) => new(serialiazedObj, System.Text.Encoding.UTF8, "application/json");
+        private static IList<T> DeserializeJsonStringList<T>(string jsonString) => JsonSerializer.Deserialize<IList<T>>(jsonString, JsonOptions())!;
+        private static JsonSerializerOptions JsonOptions()
         {
             var response = await httpClient.PostAsync(ProductBaseUrl, General.GenerateStringContent(General.SerializedObj(model)));
 
@@ -63,21 +56,6 @@ namespace FloraClient.Services
             return (List<Product>?)General.DeserializeJsonStringList<Product>(result)!;
         }
 
-
-        //categories
-
-        public async Task<ServiceResponse> AddCategory(Category model)
-        {
-            var response = await httpClient.PostAsync(CategoryBaseUrl, General.GenerateStringContent(General.SerializedObj(model)));
-
-            var result = CheckResponse(response);
-            if (!result.Flag)
-                return result;
-
-            var apiResponse = await ReadContent(response);
-            await ClearAndGetAllCategories();
-            return General.DeserializeJsonString<ServiceResponse>(apiResponse);
-        }
 
         public async Task GetAllCategories()
         {
