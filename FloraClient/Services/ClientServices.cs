@@ -6,6 +6,9 @@ namespace FloraClient.Services
     public class ClientServices(HttpClient httpClient) : IProductService, ICategoryService
     {
         private const string BaseUrl = "api/product";
+
+        public Action? CategoryAction { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
         private static string SerializedObj(object modelObject) => JsonSerializer.Serialize(modelObject, JsonOptions());
         private static T DeserializeJsonString<T>(string jsonString) => JsonSerializer.Deserialize<T>(jsonString, JsonOptions())!;
         private static StringContent GenerateStringContent(string serialiazedObj) => new(serialiazedObj, System.Text.Encoding.UTF8, "application/json");
@@ -90,6 +93,11 @@ namespace FloraClient.Services
             else
                 return new ServiceResponse(true, null!);
 
+        }
+
+        public Task<ServiceResponse> AddCategory(Category model)
+        {
+            throw new NotImplementedException();
         }
     }
 }

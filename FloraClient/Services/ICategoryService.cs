@@ -1,6 +1,5 @@
 ﻿using FloraSharedLibrary.Models;
 using FloraSharedLibrary.Responses;
-
 namespace FloraClient.Services
 {
     public interface ICategoryService
