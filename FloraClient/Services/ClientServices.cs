@@ -24,9 +24,10 @@ namespace FloraClient.Services
         public async Task<List<Product>> GetAllProducts(bool featuredProducts)
         {
             var response = await httpClient.GetAsync($"{ProductBaseUrl}?featured={featuredProducts}");
-            if (!response.IsSuccessStatusCode) return null!;
+            var (flag, _) = CheckResponse(response);
+            if (!flag) return null!;
 
-            var result = await response.Content.ReadAsStringAsync();
+            var result = await ReadContent(response);
             return [.. General.DeserializeJsonStringList<Product>(result)];
         }
 
@@ -44,9 +45,14 @@ namespace FloraClient.Services
             return General.DeserializeJsonString<ServiceResponse>(apiResponse);
         }
 
-        public Task GetAllCategories()
+        public async Task<List<Category>> GetAllCategories()
         {
-            throw new NotImplementedException();
+            var response = await httpClient.GetAsync($"{CategoryBaseUrl}");
+            var (flag, _) = CheckResponse(response);
+            if (!flag) return null!;
+
+            var result = await ReadContent(response);
+            return [.. General.DeserializeJsonStringList<Category>(result)];
         }
 
         //General Method 
