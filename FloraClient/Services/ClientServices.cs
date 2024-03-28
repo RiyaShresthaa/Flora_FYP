@@ -1,19 +1,15 @@
 ﻿using FloraSharedLibrary.Models;
 using FloraSharedLibrary.Responses;
-
 namespace FloraClient.Services
 {
     public class ClientServices(HttpClient httpClient) : IProductService, ICategoryService
     {
-        private const string BaseUrl = "api/product";
+        private const string ProductBaseUrl = "api/product";
+        private const string CategoryBaseUrl = "api/category";
 
-        public Action? CategoryAction { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        private static string SerializedObj(object modelObject) => JsonSerializer.Serialize(modelObject, JsonOptions());
-        private static T DeserializeJsonString<T>(string jsonString) => JsonSerializer.Deserialize<T>(jsonString, JsonOptions())!;
-        private static StringContent GenerateStringContent(string serialiazedObj) => new(serialiazedObj, System.Text.Encoding.UTF8, "application/json");
-        private static IList<T> DeserializeJsonStringList<T>(string jsonString) => JsonSerializer.Deserialize<IList<T>>(jsonString, JsonOptions())!;
-        private static JsonSerializerOptions JsonOptions()
+        //Products
+        public async Task<ServiceResponse> AddProduct(Product model)
         {
             var response = await httpClient.PostAsync(ProductBaseUrl, General.GenerateStringContent(General.SerializedObj(model)));
 
@@ -22,82 +18,47 @@ namespace FloraClient.Services
                 return result;
 
             var apiResponse = await ReadContent(response);
-            await ClearAndGetAllProducts();
             return General.DeserializeJsonString<ServiceResponse>(apiResponse);
         }
-        private async Task ClearAndGetAllProducts()
+
+        public async Task<List<Product>> GetAllProducts(bool featuredProducts)
         {
-            bool featuredProduct = true;
-            bool allProduct = false;
-            AllProducts = null!;
-            FeaturedProducts = null!;
-            await GetAllProducts(featuredProduct);
-            await GetAllProducts(allProduct);
+            var response = await httpClient.GetAsync($"{ProductBaseUrl}?featured={featuredProducts}");
+            if (!response.IsSuccessStatusCode) return null!;
+
+            var result = await response.Content.ReadAsStringAsync();
+            return [.. General.DeserializeJsonStringList<Product>(result)];
         }
 
-        public async Task GetAllProducts(bool featuredProducts)
+        
+        //Categoriees
+        public async Task<ServiceResponse> AddCategory(Category model)
         {
-            if (featuredProducts && FeaturedProducts is null)
-            {
-                FeaturedProducts = await GetProducts(featuredProducts);
-                ProductAction?.Invoke();
-                return;
-            }
-            if (!featuredProducts && AllProducts is null)
-            {
-                AllProducts = await GetProducts(featuredProducts);
-                ProductAction?.Invoke();
-                return;
-            }
-        }
-        private async Task<List<Product>> GetProducts(bool featured)
-        {
-            var response = await httpClient.GetAsync($"{ProductBaseUrl}?featured={featured}");
-            var (flag, _) = CheckResponse(response);
-            if (!flag) return null!;
-            var result = await ReadContent(response);
-            return (List<Product>?)General.DeserializeJsonStringList<Product>(result)!;
+            var response = await httpClient.PostAsync(CategoryBaseUrl, General.GenerateStringContent(General.SerializedObj(model)));
+
+            var result = CheckResponse(response);
+            if (!result.Flag)
+                return result;
+
+            var apiResponse = await ReadContent(response);
+            return General.DeserializeJsonString<ServiceResponse>(apiResponse);
         }
 
-
-        public async Task GetAllCategories()
+        public Task GetAllCategories()
         {
-            if (AllCategories is null)
-            {
-                var response = await httpClient.GetAsync($"{CategoryBaseUrl}");
-                var (flag, _) = CheckResponse(response);
-                if (!flag) return;
-
-                var result = await ReadContent(response);
-                AllCategories = (List<Category>?)General.DeserializeJsonStringList<Category>(result)!;
-                CategoryAction?.Invoke();
-            }
+            throw new NotImplementedException();
         }
 
-        private async Task ClearAndGetAllCategories()
-        {
-            
-            AllCategories = null!;
-            await GetAllCategories();
-        }
-
-        //General Method
-
+        //General Method 
         private static async Task<string> ReadContent(HttpResponseMessage response) => await response.Content.ReadAsStringAsync();
 
-
-        private ServiceResponse CheckResponse(HttpResponseMessage response)
+        private static ServiceResponse CheckResponse(HttpResponseMessage response)
         {
             if (!response.IsSuccessStatusCode)
                 return new ServiceResponse(false, "Error occured. Try again later...");
             else
                 return new ServiceResponse(true, null!);
 
-        }
-
-        public Task<ServiceResponse> AddCategory(Category model)
-        {
-            throw new NotImplementedException();
         }
     }
 }
