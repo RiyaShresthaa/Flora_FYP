@@ -72,7 +72,7 @@
     private async Task RetrieveProducts()
     {
         ProductList?.Clear();
-        bool featured = true;
+        bool featured = false;
         await ClientServices.GetAllProducts(featured);
         var data = ClientServices.FeaturedProducts;
         LoadData();
