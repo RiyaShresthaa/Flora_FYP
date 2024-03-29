@@ -73,8 +73,8 @@
     {
         ProductList?.Clear();
         bool featured = false;
-        await ClientServices.GetAllProducts(featured);
-        var data = ClientServices.FeaturedProducts;
+        await ProductServices.GetAllProducts(featured);
+        var data = ProductServices.FeaturedProducts;
         LoadData();
     }
 

@@ -80,8 +80,8 @@
     {
         FeaturedProductList?.Clear();
         bool featured = true;
-        await ClientServices.GetAllProducts(featured);
-        FeaturedProductList = ClientServices.FeaturedProducts;
+        await ProductServices.GetAllProducts(featured);
+        FeaturedProductList = ProductServices.FeaturedProducts;
     }
 
     string GetNewLabel(DateTime dateUploaded)

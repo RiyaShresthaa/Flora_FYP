@@ -25,8 +25,10 @@ namespace FloraClient.Services
                 return result;
 
             var apiResponse = await ReadContent(response);
+            var data = General.DeserializeJsonString<ServiceResponse>(apiResponse);
+            if (!data.Flag) return data;
             await ClearAndGetAllProducts();
-            return General.DeserializeJsonString<ServiceResponse>(apiResponse);
+            return data;
         }
         private async Task ClearAndGetAllProducts()
         {
@@ -77,8 +79,10 @@ namespace FloraClient.Services
                 return result;
 
             var apiResponse = await ReadContent(response);
+            var data = General.DeserializeJsonString<ServiceResponse>(apiResponse);
+            if (!data.Flag) return data;
             await ClearAndGetAllCategories();
-            return General.DeserializeJsonString<ServiceResponse>(apiResponse);
+            return data;
         }
 
         public async Task GetAllCategories()
