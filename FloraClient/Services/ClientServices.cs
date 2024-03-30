@@ -13,6 +13,7 @@ namespace FloraClient.Services
         public Action? ProductAction { get; set; }
         public List<Product> AllProducts { get; set; }
         public List<Product> FeaturedProducts { get; set; }
+        public List<Product> ProductsByCategory { get; set; }
 
 
         //Products
@@ -67,7 +68,13 @@ namespace FloraClient.Services
             var result = await ReadContent(response);
             return (List<Product>?)General.DeserializeJsonStringList<Product>(result)!;
         }
-
+        public async Task GetProductByCategory(int categoryId)
+        {
+            bool featured = false;
+            await GetAllProducts(featured);
+            ProductsByCategory = AllProducts.Where(_ => _.CategoryId == categoryId).ToList();
+            ProductAction?.Invoke();
+        }
 
         //Categoriees
         public async Task<ServiceResponse> AddCategory(Category model)
@@ -117,5 +124,7 @@ namespace FloraClient.Services
                 return new ServiceResponse(true, null!);
 
         }
+
+       
     }
 }
