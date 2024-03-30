@@ -1,11 +1,11 @@
 ﻿<div class="container-fluid mt-5">
     <div class="row">
         <div class="col-md-12 col-sm-12">
-            <hr/>
+            <hr />
             <span style="font-family:tangerine_regular">Featured</span>
             <div class="card border-0">
                 <div class="d-flex justify-content-evenly align-items-center">
-                    <img src="~/resources/lessthan.png" width="50" height="50" id="styleCursor" @onclick="PreviousButton"/>
+                    <img src="~/resources/lessthan.png" width="50" height="50" id="styleCursor" @onclick="PreviousButton" />
                     @if (FeaturedProducts is null) return;
                     @foreach (var item in FeaturedProducts)
                     {
@@ -18,13 +18,13 @@
                                 else
                                 {
                                     <span class="badge bg-none d-flex align-items-end float-end" style="width:50px; height:20px"></span>
-                                    <img class="card-img-top childImage" src="@item.Base64Img" width="150" height="200" style="max-width:150px;min-width:150px;"/>
+                                    <img class="card-img-top childImage" src="@item.Base64Img" width="150" height="200" style="max-width:150px;min-width:150px;" />
                                     <div id="productCover" class="bg-secondary text-white d-flex justify-content-center text-wrap">@item.Name</div>
                                 }
                             </div>
                         </div>
                     }
-                    <img src="~/resources/greaterthan.png" width="50" height="50" id="styleCursor" @onclick="NextButton"/>
+                    <img src="~/resources/greaterthan.png" width="50" height="50" id="styleCursor" @onclick="NextButton" />
 
                 </div>
             </div>
@@ -34,80 +34,83 @@
 </div>
 
 <style>
-    #styleCursor{
+    #styleCursor {
         cursor: pointer;
     }
 
     #productCover {
-        width:150px;
-        font-size:14px;
+        width: 150px;
+        font-size: 14px;
         height: 50px;
-        position:absolute;
+        position: absolute;
         bottom: 10px;
         border-radius: 10px;
         padding: 2px;
         cursor: pointer;
-
     }
 
-    #productCover:hover{
-        opacity: 1
-    }
+        #productCover:hover {
+            opacity: 1
+        }
 
-    img{
+    img {
         opacity: 1;
         cursor: pointer;
     }
-    .childImage:hover{
+
+    .childImage:hover {
         opacity: 0.5;
     }
 </style>
 @code {
-    List<Product>? ProductList = new();
-    protected override async Task OnInitializedAsync()
-    {
-        await RetrieveProducts();
-    }
-
-    private async Task RetrieveProducts()
-    {
-        ProductList?.Clear();
-        bool featured = false;
-        await ProductServices.GetAllProducts(featured);
-        var data = ProductServices.FeaturedProducts;
-        LoadData();
-    }
-
     public int PageSize { get; set; } = 8;
     public int Skip { get; set; } = 0;
     public int Take { get; set; } = 8;
-
     List<Product> FeaturedProducts = new();
-    void LoadData()
+
+    protected override async Task OnInitializedAsync()
     {
-        var getData = ProductList!.Skip(Skip).Take(Take).ToList();
+        bool featured = true;
+        await ProductServices.GetAllProducts(featured);
+        ProductServices.ProductAction += StateHasChanged;
+        LoadData();
+    }
+    private async void LoadData()
+    {
+        var getData = await SkipAndTake(Skip, Take);
         Skip += PageSize;
+        AddToFeaturedProducts(getData);
+    }
+    private async Task<List<Product>> SkipAndTake(int skip, int take) => ProductServices.FeaturedProducts
+        .Skip(Skip)
+        .Take(Take)
+        .ToList();
+
+    private void AddToFeaturedProducts(List<Product> incomingProduct)
+    {
         FeaturedProducts?.Clear();
-        foreach (var i in getData)
-            FeaturedProducts!.Add(i);
+        FeaturedProducts = incomingProduct;
     }
 
-    void PreviousButton()
+    private async void NextButton()
+    {
+        if (Skip > ProductServices.FeaturedProducts.Count()) return;
+        var getNextProducts = await SkipAndTake(Skip, Take);
+        Skip += PageSize;
+        AddToFeaturedProducts(getNextProducts);
+    }
+
+    async void PreviousButton()
     {
         if (Skip == 8) return;
-        var getNextProducts = ProductList!.Skip(Skip - (PageSize * 2)).Take(Take).ToList();
+        var getPreviousProducts = await SkipAndTake(Skip - (PageSize * 2), Take);
         Skip -= PageSize;
-        FeaturedProducts?.Clear();
-        foreach (var i in getNextProducts)
-            FeaturedProducts!.Add(i);
+        AddToFeaturedProducts(getPreviousProducts);
     }
-    void NextButton()
+
+    public void Dispose()
     {
-        if (Skip > ProductList!.Count()) return;
-        var getNextProducts = ProductList!.Skip(Skip).Take(Take).ToList();
-        Skip += PageSize;
-        FeaturedProducts?.Clear();
-        foreach (var i in getNextProducts)
-            FeaturedProducts!.Add(i);
+        ProductServices.ProductAction -= StateHasChanged;
     }
+
 }
