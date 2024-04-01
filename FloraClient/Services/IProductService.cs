@@ -11,6 +11,8 @@ namespace FloraClient.Services
         List<Product> FeaturedProducts { get; set; }
         List<Product> ProductsByCategory { get; set; }
         Task GetProductByCategory(int categoryId);
+
+        Product GetRandomProduct();
     }
 }
 

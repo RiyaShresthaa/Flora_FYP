@@ -26,6 +26,7 @@ namespace FloraClient.Services
                 return result;
 
             var apiResponse = await ReadContent(response);
+
             var data = General.DeserializeJsonString<ServiceResponse>(apiResponse);
             if (!data.Flag) return data;
             await ClearAndGetAllProducts();
@@ -76,6 +77,18 @@ namespace FloraClient.Services
             ProductAction?.Invoke();
         }
 
+        public Product GetRandomProduct()
+        {
+            if (FeaturedProducts is null)
+                return null!;
+            Random RandomNumbers = new();
+            int minimumNumber = FeaturedProducts.Min(_ => _.Id);
+            int maxmimumNumber = FeaturedProducts.Max(_ => _.Id) +1;
+            int result = RandomNumbers.Next(minimumNumber, maxmimumNumber);
+            return FeaturedProducts.FirstOrDefault(_ => + _.Id == result)!;
+        }
+
+
         //Categoriees
         public async Task<ServiceResponse> AddCategory(Category model)
         {
@@ -86,6 +99,7 @@ namespace FloraClient.Services
                 return result;
 
             var apiResponse = await ReadContent(response);
+
             var data = General.DeserializeJsonString<ServiceResponse>(apiResponse);
             if (!data.Flag) return data;
             await ClearAndGetAllCategories();
@@ -125,6 +139,6 @@ namespace FloraClient.Services
 
         }
 
-       
+        
     }
 }

@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Pages\Product\BannerPage.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Pages\Home.razor.css" />
   </ItemGroup>
 
@@ -23,6 +27,18 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FloraSharedLibrary\FloraSharedLibrary.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Pages\Product\BannerPage.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Pages\Product\BannerPage.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Pages\Product\BannerPage.razor" />
   </ItemGroup>
 
 </Project>
