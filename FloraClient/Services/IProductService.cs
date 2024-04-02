@@ -13,6 +13,7 @@ namespace FloraClient.Services
         Task GetProductByCategory(int categoryId);
 
         Product GetRandomProduct();
+        bool IsVisible { get; set; }
     }
 }
 

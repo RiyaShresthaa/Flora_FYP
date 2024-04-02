@@ -14,6 +14,7 @@ namespace FloraClient.Services
         public List<Product> AllProducts { get; set; }
         public List<Product> FeaturedProducts { get; set; }
         public List<Product> ProductsByCategory { get; set; }
+        public bool IsVisible { get ; set ; }
 
 
         //Products
@@ -46,7 +47,9 @@ namespace FloraClient.Services
         {
             if (featuredProducts && FeaturedProducts is null)
             {
+                IsVisible = true;
                 FeaturedProducts = await GetProducts(featuredProducts);
+                IsVisible = false;
                 ProductAction?.Invoke();
                 return;
             }
@@ -54,7 +57,9 @@ namespace FloraClient.Services
             {
                 if (!featuredProducts && AllProducts is null)
                 {
+                    IsVisible = true;
                     AllProducts = await GetProducts(featuredProducts);
+                    IsVisible = false;
                     ProductAction?.Invoke();
                     return;
                 }

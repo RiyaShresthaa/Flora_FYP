@@ -1,28 +1,35 @@
 ﻿@page "/products"
 @implements IDisposable
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-lg-2">
-            <CategoriesPage CategoryClickedEvent="CategoryClickedEvent" DefaultCategoryClickedEvent="DefaultCategeoryClickedEvent" />
-        </div>
-        <div class="col-lg-10">
-            <BannerPage />
-            <div class="card border-0">
-                <div class="card-header border-sucess-subtle mb-2"></div>
-                <ProductListPage AllProducts="ProductServices.ProductsByCategory?? ProductServices.AllProducts" />
+@if (ProductServices.IsVisible)
+{
+    <LoadingPage />
+}
+else
+{
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-2">
+                <CategoriesPage CategoryClickedEvent="CategoryClickedEvent" DefaultCategoryClickedEvent="DefaultCategeoryClickedEvent" />
             </div>
-        </div>
-        <div class="col-lg-12 mt-5">
+            <div class="col-lg-10">
+                <BannerPage />
+                <div class="card border-0">
+                    <div class="card-header border-sucess-subtle mb-2"></div>
+                    <ProductListPage AllProducts="ProductServices.ProductsByCategory?? ProductServices.AllProducts" />
+                </div>
+            </div>
+            <div class="col-lg-12 mt-5">
 
-        <div class="card border-0" style="position:absolute;left:1px;right:1px">
-            <div class="card-header border-danger-subtle">
-                Recommended Products
+                <div class="card border-0" style="position:absolute;left:1px;right:1px">
+                    <div class="card-header border-danger-subtle">
+                        Recommended Products
+                    </div>
+                    <RecommendedPage />
+                </div>
             </div>
-            <RecommendedPage/>
-        </div>
         </div>
     </div>
-</div>
+}
 
 @code {
     protected async override Task OnInitializedAsync()

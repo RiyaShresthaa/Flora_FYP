@@ -1,70 +1,78 @@
 ﻿@page "/front"
 @implements IDisposable
-<div class="container">
-    <div class="row">
-        <div class="col-md-12">
-            @if (ProductServices.FeaturedProducts is not null)
-            {
-                <div class="control-container text-dark">
-                    <SfCarousel ButtonsVisibility="CarouselButtonVisibility.VisibleOnHover" AnimationEffect="CarouselAnimationEffect.Slide" AutoPlay="true" ShowIndicators="true">
-                        <ChildContent>
-                            @foreach (Product product in ProductServices.FeaturedProducts!.OrderByDescending(_ => _.DateUploaded).Take(5)!)
-                            {
-                                <CarouselItem>
-                                    <figure class="img-container">
-                                        <img src="@product.Base64Img" width="250" height="380" class="float-end" />
-                                    </figure>
-                                    <div class="d-flex justify-content-center">
-                                        <div style="position:absolute; bottom:50px;">
-                                            <div class="vstack gap-3 mb-3">
-                                                <div>
-                                                    <p>
-                                                        <span style="font-family:Impact; text-indent:2px;" class="text-dark fw-bold display-2">
-                                                            @product.Name
-                                                            <sup style="font-family:'Courier New'">
-                                                                <span class="badge rounded-pill bg-primary fs-6">@(GetNewLabel(product.DateUploaded))</span>
+
+@if (ProductServices.IsVisible)
+{
+    <LoadingPage />
+}
+else
+{
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                @if (ProductServices.FeaturedProducts is not null)
+                {
+                    <div class="control-container text-dark">
+                        <SfCarousel ButtonsVisibility="CarouselButtonVisibility.VisibleOnHover" AnimationEffect="CarouselAnimationEffect.Slide" AutoPlay="true" ShowIndicators="true">
+                            <ChildContent>
+                                @foreach (Product product in ProductServices.FeaturedProducts!.OrderByDescending(_ => _.DateUploaded).Take(5)!)
+                                {
+                                    <CarouselItem>
+                                        <figure class="img-container">
+                                            <img src="@product.Base64Img" width="250" height="380" class="float-end" />
+                                        </figure>
+                                        <div class="d-flex justify-content-center">
+                                            <div style="position:absolute; bottom:50px;">
+                                                <div class="vstack gap-3 mb-3">
+                                                    <div>
+                                                        <p>
+                                                            <span style="font-family:Impact; text-indent:2px;" class="text-dark fw-bold display-2">
+                                                                @product.Name
+                                                                <sup style="font-family:'Courier New'">
+                                                                    <span class="badge rounded-pill bg-primary fs-6">@(GetNewLabel(product.DateUploaded))</span>
                                                                     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-family:sans-serif; font-size:11px;">
-                                                                        @((product.Quantity - 1)>0?$"{product.Quantity-1}+" : product.Quantity)
+                                                                        @((product.Quantity - 1) > 0 ? $"{product.Quantity - 1}+" : product.Quantity)
                                                                         <span class="visually-hidden">unread messages</span>
                                                                     </span>
-                                                            </sup>
-                                                        </span>
-                                                    </p>
+                                                                </sup>
+                                                            </span>
+                                                        </p>
+                                                    </div>
+                                                    <p class="text-muted fs-5 w-75" style="text-align:justify-all; font-family:Cambria">@(General.GetDescription(product.Description!))</p>
                                                 </div>
-                                                <p class="text-muted fs-5 w-75" style="text-align:justify-all; font-family:Cambria">@(General.GetDescription(product.Description!))</p>
-                                            </div>
-                                            <div class="hstack gap-1 d-flex justify-content-center">
-                                                <button class="btn btn-secondary fw-bold" id="styleButton"><i class="fa fa-list"></i>Details</button>
-                                                <button class="btn btn-outline-danger fw-bold" id="styleButton"><i class="fa fa-cart-plus"></i>BUY NOW</button>
+                                                <div class="hstack gap-1 d-flex justify-content-center">
+                                                    <button class="btn btn-secondary fw-bold" id="styleButton"><i class="fa fa-list"></i>Details</button>
+                                                    <button class="btn btn-outline-danger fw-bold" id="styleButton"><i class="fa fa-cart-plus"></i>BUY NOW</button>
 
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </CarouselItem>
-                            }
-                        </ChildContent>
-                        <PreviousButtonTemplate>
-                            <img src="~/resources/lessthan.png" width="50" heigth="50" id="styleCursor" />
+                                    </CarouselItem>
+                                }
+                            </ChildContent>
+                            <PreviousButtonTemplate>
+                                <img src="~/resources/lessthan.png" width="50" heigth="50" id="styleCursor" />
 
-                        </PreviousButtonTemplate>
-                        <NextButtonTemplate>
-                            <img src="~/resources/greaterthan.png" width="50" heigth="50" id="styleCursor" />
-                        </NextButtonTemplate>
+                            </PreviousButtonTemplate>
+                            <NextButtonTemplate>
+                                <img src="~/resources/greaterthan.png" width="50" heigth="50" id="styleCursor" />
+                            </NextButtonTemplate>
 
-                        <IndicatorsTemplate>
-                            <div class="indicator"></div>
-                        </IndicatorsTemplate>
-                    </SfCarousel>
-                
-                </div>
-            }
-            else{
-                <div class="alert alert-info">No Product Available</div>
-            }
+                            <IndicatorsTemplate>
+                                <div class="indicator"></div>
+                            </IndicatorsTemplate>
+                        </SfCarousel>
+
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-info">No Product Available</div>
+                }
+            </div>
         </div>
     </div>
-</div>
-
+}
 
 
 @code {
@@ -78,7 +86,7 @@
         ProductServices.ProductAction += StateHasChanged;
     }
 
-    //retrieve items from api 
+    //retrieve items from api
     private async Task RetrieveFeaturedProduct()
     {
         FeaturedProductList?.Clear();
@@ -94,7 +102,7 @@
         return productDataAfterUploaded <= maxDays ? "New" : null!;
     }
 
-    
+
 
     public void Dispose()
     {
