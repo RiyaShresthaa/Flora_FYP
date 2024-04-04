@@ -5,8 +5,14 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 namespace FloraServer.Repositories
 {
-    public class UserAccountRepository(AppDbContext appDbContext) : IUserAccount
+    public class UserAccountRepository: IUserAccount
     {
+        private readonly AppDbContext _appDbContext;
+
+        public UserAccountRepository(AppDbContext appDbContext)
+        {
+            _appDbContext = appDbContext;
+        }
         public Task<LoginResponse> GetRefreshToken(PostRefereshTokenDTO model)
         {
             throw new NotImplementedException();
@@ -22,7 +28,7 @@ namespace FloraServer.Repositories
             if (model is null)
                 return new LoginResponse(false, "Model is empty");
 
-            var findUser = await appDbContext.UserAccounts
+            var findUser = await _appDbContext.UserAccounts
                 .FirstOrDefaultAsync(_ => _.Email!.Equals(model!.Email!));
             if (findUser is null)
                 return new LoginResponse(false, "User not found");
@@ -38,10 +44,10 @@ namespace FloraServer.Repositories
 
         private async Task SaveToTokenInfo(int userId, string accessToken, string refreshToken)
         {
-            var getUser = await appDbContext.TokenInfo.FirstOrDefaultAsync(_ => _.UserId == userId);
+            var getUser = await _appDbContext.TokenInfo.FirstOrDefaultAsync(_ => _.UserId == userId);
             if (getUser is null)
             {
-                appDbContext.TokenInfo.Add(new TokenInfo()
+                _appDbContext.TokenInfo.Add(new TokenInfo()
                 { UserId=userId, AccessToken=accessToken, RefreshToken=refreshToken });
                 await Commit();
             }
@@ -70,13 +76,13 @@ namespace FloraServer.Repositories
             TokenInfo tokenInfo = new();
             if (!string.IsNullOrEmpty(refreshToken))
             {
-                var getRefreshToken = await appDbContext.TokenInfo
+                var getRefreshToken = await _appDbContext.TokenInfo
                     .FirstOrDefaultAsync(_ => _.RefreshToken!.Equals(refreshToken));
                 return getRefreshToken is null ? true: false;
             }
             else
             {
-                var getAccessToken = await appDbContext.TokenInfo
+                var getAccessToken = await _appDbContext.TokenInfo
                     .FirstOrDefaultAsync(_ => _.AccessToken!.Equals(accessToken));
                 return getAccessToken is null;
             }
@@ -85,11 +91,12 @@ namespace FloraServer.Repositories
             Convert.ToBase64String(RandomNumberGenerator.GetBytes(numberOfBytes));
         public async Task<ServiceResponse> Register(UserDTO model)
         {
-            var findUser = await appDbContext.UserAccounts.FirstOrDefaultAsync(_ => _.Email!.ToLower().Equals(model.Email!.ToLower()));
-            if (findUser == null)
+            var findUser = await _appDbContext.UserAccounts
+                .FirstOrDefaultAsync(_ => _.Email!.ToLower().Equals(model.Email!.ToLower()));
+            if (findUser is not null)
                 return new ServiceResponse(false, "User Registered already");
 
-            var user = appDbContext.UserAccounts.Add(new UserAccount()
+            var user = _appDbContext.UserAccounts.Add(new UserAccount()
             {
                 Password = BCrypt.Net.BCrypt.HashPassword(model.Password),
                 Name = model.Name,
@@ -97,29 +104,29 @@ namespace FloraServer.Repositories
             }).Entity;
             await Commit();
 
-            var checkIfAdminIsCreated = await appDbContext.SystemRoles
+            var checkIfAdminIsCreated = await _appDbContext.SystemRoles
                 .FirstOrDefaultAsync(_ => _.Name!.ToLower().Equals("admin"));
             if (checkIfAdminIsCreated is null)
             {
-                var result = appDbContext.SystemRoles.Add(new SystemRole() { Name = "Admin" }).Entity;
+                var result = _appDbContext.SystemRoles.Add(new SystemRole() { Name = "Admin" }).Entity;
                 await Commit();
 
-                appDbContext.UserRoles.Add(new UserRole() { RoleId = result.Id, UserId = user.Id });
+                _appDbContext.UserRoles.Add(new UserRole() { RoleId = result.Id, UserId = user.Id });
                 await Commit();
             }
             else
             {
-                var checkIfUserIsCreated = await appDbContext.SystemRoles
+                var checkIfUserIsCreated = await _appDbContext.SystemRoles
                     .FirstOrDefaultAsync(_ => _.Name!.ToLower().Equals("user"));
                 int RoleId = 0;
                 if (checkIfUserIsCreated is null)
                 {
-                    var userResult = appDbContext.SystemRoles.Add(new SystemRole() { Name = "User" }).Entity;
+                    var userResult = _appDbContext.SystemRoles.Add(new SystemRole() { Name = "User" }).Entity;
                     await Commit();
                     RoleId = userResult.Id;
                 }
 
-                appDbContext.UserRoles.Add(new UserRole()
+                _appDbContext.UserRoles.Add(new UserRole()
                 {
                     RoleId = RoleId == 0 ? checkIfUserIsCreated!.Id : RoleId,
                     UserId = user.Id
@@ -129,6 +136,6 @@ namespace FloraServer.Repositories
             return new ServiceResponse(true, "Account created");
         }
 
-        private async Task Commit() => await appDbContext.SaveChangesAsync();
+        private async Task Commit() => await _appDbContext.SaveChangesAsync();
     }
 }

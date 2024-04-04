@@ -1,21 +1,28 @@
 ﻿using FloraServer.Data;
+using FloraSharedLibrary.DTOs;
 using FloraSharedLibrary.Models;
 using FloraSharedLibrary.Responses;
 using Microsoft.EntityFrameworkCore;
 
 namespace FloraServer.Repositories
 {
-    public class CategoryRepository(AppDbContext appDbContext) : ICategory
+    public class CategoryRepository : ICategory
     {
-        private readonly AppDbContext _appDbContext = appDbContext;
+        private readonly AppDbContext _appDbContext;
 
-        
+        public CategoryRepository(AppDbContext appDbContext)
+        {
+            _appDbContext= appDbContext;
+        }
+
+
         public async Task<ServiceResponse> AddCategory(Category model)
         {
             if (model is null) return new ServiceResponse(false,"model is null");
             var (flag, message) = await CheckName(model.Name!);
             if (flag)
             {
+                _appDbContext.Categories.Add(model);
                 await Commit();
                 return new ServiceResponse(true, "Category Saved");
                 
