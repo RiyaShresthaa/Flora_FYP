@@ -1,12 +1,14 @@
-﻿using FloraSharedLibrary.Models;
+﻿using FloraSharedLibrary.DTOs;
+using FloraSharedLibrary.Models;
 using FloraSharedLibrary.Responses;
 
 namespace FloraClient.Services
 {
-    public class ClientServices(HttpClient httpClient) : IProductService, ICategoryService
+    public class ClientServices(HttpClient httpClient) : IProductService, ICategoryService, IUserAccountService
     {
         private const string ProductBaseUrl = "api/product";
         private const string CategoryBaseUrl = "api/category";
+        private const string AuthenticationBaseUrl = "api/account";
 
         public Action? CategoryAction { get; set; }
         public List<Category> AllCategories { get; set; }
@@ -133,7 +135,8 @@ namespace FloraClient.Services
 
 
         //General Method 
-        private static async Task<string> ReadContent(HttpResponseMessage response) => await response.Content.ReadAsStringAsync();
+        private static async Task<string> ReadContent(HttpResponseMessage response) => 
+            await response.Content.ReadAsStringAsync();
 
         private static ServiceResponse CheckResponse(HttpResponseMessage response)
         {
@@ -144,6 +147,30 @@ namespace FloraClient.Services
 
         }
 
-        
+
+        //authentication
+        public async Task<ServiceResponse> Register(UserDTO model)
+        {
+            var response = await httpClient.PostAsync($"{AuthenticationBaseUrl}/register",
+                General.GenerateStringContent(General.SerializedObj(model)));
+            var result = CheckResponse(response);
+            if (!result.Flag)
+                return result;
+
+            var apiResponse = await ReadContent(response);
+            return General.DeserializeJsonString<ServiceResponse>(apiResponse);
+        }
+
+        public async Task<LoginResponse> Login(LoginDTO model)
+        {
+            var response = await httpClient.PostAsync($"{AuthenticationBaseUrl}/login",
+                General.GenerateStringContent(General.SerializedObj(model)));
+
+            if (!response.IsSuccessStatusCode)
+                return new LoginResponse(false, "Error Occured", null!, null!);
+
+            var apiResponse = await ReadContent(response);
+            return General.DeserializeJsonString<LoginResponse>(apiResponse);
+        }
     }
 }
