@@ -1,8 +1,10 @@
 ﻿using FloraServer.Data;
 using FloraSharedLibrary.DTOs;
 using FloraSharedLibrary.Responses;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
+using System.Text;
 namespace FloraServer.Repositories
 {
     public class UserAccountRepository: IUserAccount
@@ -13,14 +15,47 @@ namespace FloraServer.Repositories
         {
             _appDbContext = appDbContext;
         }
-        public Task<LoginResponse> GetRefreshToken(PostRefereshTokenDTO model)
+        public async Task<LoginResponse> GetRefreshToken(PostRefereshTokenDTO model)
         {
-            throw new NotImplementedException();
+            var decodedToken = WebEncoders.Base64UrlDecode(model.RefreshToken!);
+            string normalToken = Encoding.UTF8.GetString(decodedToken);
+
+            var getToken = await _appDbContext.TokenInfo
+                .FirstOrDefaultAsync(x => x.RefreshToken == normalToken);
+            if (getToken is null) return null!;
+
+            //Generate new token
+            var (newAccessToken, NewRefreshToken) = await GenerateToken();
+
+            //add or update Token Info 
+            await SaveToTokenInfo(getToken.UserId, newAccessToken, NewRefreshToken);
+            return new LoginResponse(true, "refresh-token-completed", newAccessToken, NewRefreshToken);
+
+
         }
 
-        public Task<UserSession> GetUserByToken(string token)
+        public async Task<UserSession> GetUserByToken(string token)
         {
-            throw new NotImplementedException();
+            var result = await _appDbContext.TokenInfo
+                .FirstOrDefaultAsync(_ => _.AccessToken!.Equals(token));
+            if (result is null) return null!;
+
+            var getUserInfo = await _appDbContext.UserAccounts
+                .FirstOrDefaultAsync(_ => _.Id == result.UserId);
+            if (getUserInfo is null) return null!;
+
+            if (result.ExpiryDate < DateTime.Now) return null!;
+
+            var getUserRole = await _appDbContext.UserRoles
+                .FirstOrDefaultAsync(_ => _.UserId == getUserInfo.Id);
+            if (getUserRole is null) return null!;
+
+            var roleName = await _appDbContext.SystemRoles
+                .FirstOrDefaultAsync(_ => _.Id == getUserRole.RoleId);
+            if (roleName is null) return null!;
+
+            return new UserSession()
+            { Email = getUserInfo.Email, Name = getUserInfo.Name, Role = roleName.Name };
         }
 
         public async Task<LoginResponse> Login(LoginDTO model)

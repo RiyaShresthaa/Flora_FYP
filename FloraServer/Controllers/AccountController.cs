@@ -25,5 +25,44 @@ namespace FloraServer.Controllers
             var response = await accountService.Login(model);
             return Ok(response);
         }
+
+        [HttpGet("user-info")]
+        public async Task<IActionResult> GetUserInfo()
+        {
+            var token = GetTokenFromHeader();
+            if(string.IsNullOrEmpty(token)) 
+                return Unauthorized();
+
+            var getUser = await accountService.GetUserByToken(token!);
+            if (getUser is null || string.IsNullOrEmpty(getUser.Email))
+                return Unauthorized();
+
+            return Ok(getUser);
+        }
+
+        [HttpPost("refresh-token")]
+
+        public async Task<ActionResult<LoginResponse>> RefreshToken(PostRefereshTokenDTO model)
+        {
+            if (model is null) return Unauthorized();
+            var result = await accountService.GetRefreshToken(model);
+            return Ok(result);
+        }
+
+        private string GetTokenFromHeader()
+        {
+            string Token = string.Empty;
+            foreach(var header in Request.Headers)
+            {
+                if (header.Key.ToString().Equals("Authorization"))
+                {
+                    Token = header.Value.ToString();
+                    break;
+                }
+            }
+            return Token.Split(" ").LastOrDefault()!;
+        }
+
+
     }
 }
