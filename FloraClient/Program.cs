@@ -1,6 +1,8 @@
+using Blazored.LocalStorage;
 using FloraClient;
 using FloraClient.Authentication;
 using FloraClient.Services;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Syncfusion.Blazor;
