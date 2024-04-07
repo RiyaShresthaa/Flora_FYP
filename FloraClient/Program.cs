@@ -17,7 +17,7 @@ builder.Services.AddScoped<ICategoryService, ClientServices>();
 builder.Services.AddScoped<IUserAccountService, ClientServices>();
 builder.Services.AddScoped<AuthenticationService>();
 builder.Services.AddScoped<MessageDialogService>();
-builder.Services.AddSyncfusionBlazor();
+//builder.Services.AddSyncfusionBlazor();
 await builder.Build().RunAsync();
 var app = builder.Build();
 //Register Syncfusion license
