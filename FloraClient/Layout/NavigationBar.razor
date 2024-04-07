@@ -1,40 +1,69 @@
 ﻿<nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#">Navbar</a>
+        <a class="navbar-brand" href="#">Surya Flowers</a>
+        <a class="navbar-brand" href="#">
+            <i class="fa fa-cart-shopping text-danger"></i>
+            <span class="small text-danger fw-bold">1</span>
+
+            <h6>
+                Hello,
+                <AuthorizeView>
+                    <Authorized>@context.User.Identity!.Name</Authorized>
+                    <NotAuthorized> Guest</NotAuthorized>
+                </AuthorizeView>
+            </h6>
+        </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="">HOME</a>
+                    <a class="nav-link active" aria-current="page" href="">Home</a>
                 </li>
                 <li class="nav-items">
-                    <a class="nav-link d-flex align-items-center" herf="/front">PRODUCT</a>
+                    <a class="nav-link d-flex align-items-center" herf="/products">Product</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">SERVICES</a>
+                    <a class="nav-link" href="#">Services</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">TESTIMONIALS</a>
+                    <a class="nav-link" href="#">About</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">Contact</a>
                 </li>
+
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Dropdown
+                        Account
                     </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="#">Action</a></li>
-                        <li><a class="dropdown-item" href="#">Another action</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#">Something else here</a></li>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown" style="font-family:sans-serif">
+                        <AuthorizeView>
+                            <Authorized>
+                                <li>
+                                    <button class="btn btn-danger btn-none"><i class="fa fa-lock-open"></i> Logout</button>
+                                </li>
+                            </Authorized>
+                            <NotAuthorized>
+                                @{
+                                    string register = "register";
+                                    string login = "login";
+                                }
+                                <li>
+                                    <button class="btn btn-none" @onclick="@(() => NavigateTo(login))"><i class="fa fa-lock"></i> Login</button>
+                                </li>
+                                <li><hr class="dropdown-divider" /></li>
+                                <li>
+                                    <button class="btn btn-none" @onclick="@(() => NavigateTo(register))"><i class="fa fa-sign-in"></i> Sign Up</button>
+                                </li>
+                            </NotAuthorized>
+                        </AuthorizeView>
                     </ul>
                 </li>
-                
+
             </ul>
-            @if(ShowSearchIcon)
+            @if (ShowSearchIcon)
             {
                 <button @onclick="SearchClicked" class="btn btn-none">
                     <i class="fa fa-magnifying-glass fs-5" style="cursor:pointer"></i>
@@ -54,5 +83,10 @@
     {
         ShowSearch = true;
         ShowSearchIcon = !ShowSearch;
+    }
+
+    void NavigateTo(string url)
+    {
+        NavManager.NavigateTo($"identity/account/{url}");
     }
 }
