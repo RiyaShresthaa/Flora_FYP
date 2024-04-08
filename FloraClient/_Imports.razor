@@ -1,6 +1,7 @@
 ﻿@using System.Net.Http
 @using System.Net.Http.Json
 @using FloraClient.Services
+@using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Routing
 @using Microsoft.AspNetCore.Components.Web
@@ -14,8 +15,11 @@
 @using FloraClient.Pages.Other
 @using FloraClient.Pages.Product
 @using FloraClient.Pages.Category
+@using FloraSharedLibrary.DTOs
 
 @inject IJSRuntime js
 @inject IProductService ProductServices
 @inject ICategoryService CategoryServices
+@inject IUserAccountService accountService
 @inject MessageDialogService messageDialogService
+
