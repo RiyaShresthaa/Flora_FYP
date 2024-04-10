@@ -20,7 +20,7 @@ builder.Services.AddScoped<IUserAccountService, ClientServices>();
 builder.Services.AddScoped<AuthenticationService>();
 builder.Services.AddScoped<MessageDialogService>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
-
+builder.Services.AddAuthorizationCore();
 //builder.Services.AddSyncfusionBlazor();
 builder.Services.AddBlazoredLocalStorage();
 await builder.Build().RunAsync();

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddAuthentication();
 builder.Services.AddAuthorization();
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
@@ -39,10 +40,11 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
-app.UseAuthorization(); 
+app.UseAuthentication(); 
+app.UseAuthorization();
 app.UseRouting();
 app.MapRazorPages();
 app.MapControllers();
 app.MapControllers();
-app.MapFallbackToFile("index.html");
+//app.MapFallbackToFile("index.html");
 app.Run();
